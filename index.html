@@ -1,180 +1,187 @@
 <!doctype html>
 <html lang="ps">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Tuinty / LinkPass — Single HTML</title>
-  <style>
-    body{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial; background:#f7fafc; color:#0b1220; padding:28px}
-    .card{max-width:720px;margin:0 auto;background:#fff;padding:18px;border-radius:12px;box-shadow:0 8px 30px rgba(2,6,23,0.06)}
-    h1{margin:0 0 8px;font-size:20px}
-    label{display:block;margin-top:12px;color:#374151;font-size:14px}
-    input[type=text], textarea, select{width:100%;padding:10px;margin-top:8px;border:1px solid #e6e9ef;border-radius:8px;font-size:14px}
-    .row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
-    button{background:#2563eb;color:#fff;border:none;padding:10px 12px;border-radius:8px;cursor:pointer;font-weight:600}
-    button.ghost{background:transparent;color:#2563eb;border:1px solid rgba(37,99,235,0.12)}
-    .result{margin-top:14px;padding:12px;border-radius:10px;background:#f8fafc;border:1px solid rgba(2,6,23,0.03)}
-    .label{font-weight:600;color:#0b1220}
-    .muted{color:#6b7280;font-size:13px}
-    .preview{margin-top:12px;padding:14px;border-radius:12px;border:1px solid rgba(2,6,23,0.06);max-width:420px}
-    .btn-preview{display:inline-block;padding:8px 12px;border-radius:10px;text-decoration:none;border:1px solid rgba(2,6,23,0.08);font-weight:700}
-    .small{font-size:13px;color:#6b7280}
-    .qr img{border-radius:8px;margin-top:8px}
-    code{background:#eef2ff;padding:2px 6px;border-radius:6px}
-  </style>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Tuinty LinkPass Builder — Static (HTML)</title>
+<style>
+  :root{--bg:#f6f8fb;--card:#fff;--accent:#2563eb;--muted:#64748b}
+  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;background:var(--bg);color:#0f172a;padding:28px}
+  .wrap{max-width:980px;margin:0 auto;display:grid;grid-template-columns:1fr 420px;gap:20px}
+  .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 8px 30px rgba(2,6,23,0.06)}
+  h1{margin:0 0 8px;font-size:20px}
+  label{display:block;font-size:13px;color:var(--muted);margin-top:10px}
+  input[type=text], textarea, select{width:100%;padding:10px;margin-top:8px;border:1px solid #e6e9ef;border-radius:8px;font-size:14px}
+  .row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+  button{background:var(--accent);color:white;border:none;padding:10px 12px;border-radius:8px;cursor:pointer;font-weight:600}
+  button.ghost{background:transparent;color:var(--accent);border:1px solid rgba(37,99,235,0.12)}
+  pre{background:#f1f5f9;padding:12px;border-radius:8px;overflow:auto}
+  .muted{color:var(--muted);font-size:13px}
+  .small{font-size:13px;color:var(--muted)}
+  .out{margin-top:12px}
+  a.short{color:var(--accent);font-weight:700}
+  @media(max-width:900px){.wrap{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
-  <div class="card">
-    <h1>🌐 Tuinty / LinkPass — Single HTML</h1>
-    <p class="muted">یو لینک دننه کړئ؛ دا صفحې به یو مختصر (LinkPass) جوړ کړي او هغه لینک د کوډ په شکل کې په URL هَش کې ځای پر ځای کړي. کله چې څوک هغه لینک خلاص کړي، دوی به مستقیم اصلي لینک ته ولاړ شي.</p>
+  <div class="wrap">
+    <main class="card">
+      <h1>🔧 Tuinty LinkPass Builder (Static)</h1>
+      <p class="small">یو لینک دننه کړئ، بیا کولای شئ د Netlify redirects کرښه کاپي/ډاونلوډ کړئ یا د جلا HTML redirect فایل ترلاسه کړئ چې ستاسو هاست ته اپلوډ کړئ.</p>
 
-    <label>اصلي لینک (مثلاً https://t.me/MyBot?start=hello)</label>
-    <input id="orig" type="text" placeholder="اصلي لینک دننه کړئ..." />
+      <label>اصلي لینک (destination URL)</label>
+      <input id="orig" type="text" placeholder="مثلاً: https://t.me/MyBot?start=hello" />
 
-    <label>د ښودلو لپاره برچسب / نوم (اختیاري)</label>
-    <input id="label" type="text" placeholder="مثلاً My promo link" />
+      <label>لنډ کوډ (که خالي پرېږدئ، اتومات به جوړ شي)</label>
+      <input id="code" type="text" placeholder="مثلاً: abc123" />
 
-    <div class="row">
-      <button id="gen">LinkPass جوړ کړه</button>
-      <button id="copy" class="ghost" title="کاپي وروستی جوړ شوی لینک">کاپي</button>
-      <button id="qrBtn" class="ghost">QR جوړ کړه</button>
-      <button id="clear" class="ghost">پاک ول</button>
-    </div>
+      <label>لنډ برچسب/نوم (اختیاري، یوازې د ښودلو لپاره)</label>
+      <input id="label" type="text" placeholder="مثلاً: Promo Link 1" />
 
-    <div id="out" class="result" style="display:none">
-      <div class="small">ستاسو LinkPass:</div>
-      <div style="margin-top:8px">
-        <span class="label">Tuinty/linkpass/</span><span id="codeText" style="font-family:monospace;font-weight:700"></span>
+      <div class="row">
+        <button id="gen">Generate</button>
+        <button id="copyRedirect" class="ghost" disabled>کاپي _redirects کرښه</button>
+        <button id="downloadRedirect" class="ghost" disabled>ډاونلوډ _redirects.txt</button>
+        <button id="downloadHtml" class="ghost" disabled>ډاونلوډ pass/FILE.html</button>
       </div>
 
-      <div style="margin-top:10px" class="muted">قابل کلیک لینک (شریک کړئ):</div>
-      <div style="margin-top:6px">
-        <a id="shareLink" href="#" target="_blank"></a>
+      <div class="out" id="out" style="display:none">
+        <div class="muted">د ښودلو لنډ لینک:</div>
+        <div style="margin-top:6px"><span class="small">https://www.tintyj.com/pass/</span><span id="showCode" style="font-family:monospace;font-weight:700"></span></div>
+
+        <div style="margin-top:10px" class="muted">Netlify / Vercel Redirect rule (copy this into <code>_redirects</code>):</div>
+        <pre id="redirectLine" style="margin-top:6px"></pre>
+
+        <div style="margin-top:10px" class="muted">Standalone HTML (pass/CODE.html):</div>
+        <pre id="htmlFile" style="margin-top:6px"></pre>
+
+        <div style="margin-top:10px" class="muted">نوټ: که د Netlify / Vercel کاروئ، د ریښه فولډر کې `_redirects` فایل ته د لاندې کرښو اضافه کول به دې URL ته مستقیم ریډایرېکټ ورکوي (بې منځنۍ پاڼې).</div>
       </div>
+    </main>
 
-      <div class="preview" id="preview">
-        <div id="previewTitle" style="font-weight:700">Preview title</div>
-        <div id="previewSub" class="muted" style="margin-top:6px">دکمه — target URL</div>
-        <a id="previewBtn" class="btn-preview" href="#" target="_blank">Open Link</a>
+    <aside class="card">
+      <h3 style="margin-top:0">څنګه یې کاروي</h3>
+      <ol class="small">
+        <li>اصلي لینک دننه کړئ.</li>
+        <li>که غواړئ مشخص کوډ ورکړئ، داخل یې کړئ، که نه خالي پریږدئ — اتومات کوډ جوړېږي.</li>
+        <li>Generate تڼۍ ووهئ.</li>
+        <li>کاپي یا ډاونلوډ د `_redirects` کرښه او خپل Netlify پروژه ته اضافه کړئ؛ یا یوازې `pass/CODE.html` فایل ډاونلوډ او په هاست کې اپلوډ کړئ.</li>
+      </ol>
+
+      <h4 style="margin-top:12px">مثالونه</h4>
+      <div class="small">
+        <p><strong>_redirects کرښه (Netlify):</strong><br><code>/pass/abc123 https://t.me/MyBot?start=hello 301</code></p>
+        <p><strong>جلا HTML فایل:</strong><br><code>pass/abc123.html</code> کې meta refresh یا JavaScript redirect وي.</p>
+
+        <h4 style="margin-top:10px">ډومېن</h4>
+        <p class="small">د ښې پایلې لپاره خپل ډومېن (مثلاً <em>www.tintyj.com</em>) د Netlify یا GitHub Pages سره وصل کړئ؛ که Netlify وکاروئ، `_redirects` فایل به مستقیم ریډایرېکټ وکړي.</p>
       </div>
-
-      <div id="qrWrap" class="qr" style="display:none"></div>
-    </div>
-
-    <div style="margin-top:12px" class="small">
-      نوټ: دا فایل هیڅ سرور ته اړتیا نلري. دا د لینک محتوا (اصلي URL) دننه په Base64 کوډ کوي او په هَش (fragment) کې یې ساتي؛ نو کله چې څوک شریک شوی لینک خلاص کړي، دا فایل هغه هَش تحلیل او ریډایرېکټ کوي. د ښکلا لپاره موږ د "Tuinty/linkpass/XXXXXX" برچسب ښیو خو حقیقي redirect د هَش دننه کوډ شوی URL څخه کیږي.
-    </div>
+    </aside>
   </div>
 
 <script>
-  // utility: generate short code (6 chars, base36)
-  function makeCode(len = 6) {
+  // utilities
+  function randCode(len=6){
     const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-    let s = '';
-    for (let i=0;i<len;i++) s += chars[Math.floor(Math.random()*chars.length)];
+    let s='';
+    for(let i=0;i<len;i++) s+=chars[Math.floor(Math.random()*chars.length)];
     return s;
   }
 
-  // utf8-safe base64
-  function b64EncodeUnicode(str) {
-    // first we escape the string using encodeURIComponent to get the UTF-8 encoding,
-    // then we convert the percent encodings into raw bytes, and finally btoa.
-    return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
-      function(match, p1) {
-        return String.fromCharCode('0x' + p1);
-      }));
-  }
-  function b64DecodeUnicode(str) {
-    return decodeURIComponent(Array.prototype.map.call(atob(str), function(c) {
-      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
+  function makeRedirectLine(code, dest){
+    // return a Netlify/Vercel style redirect line
+    // Ensure dest contains spaces? wrap not needed but safer to quote if spaces exist
+    return `/pass/${code} ${dest} 301`;
   }
 
-  // build share URL: current page + #lp=CODE&u=BASE64(url)&t=label
-  function buildShareLink(code, url, label) {
-    const base = location.href.split('#')[0];
-    const u = encodeURIComponent(b64EncodeUnicode(url));
-    const t = label ? encodeURIComponent(b64EncodeUnicode(label)) : '';
-    return `${base}#lp=${code}&u=${u}${t?('&t='+t):''}`;
+  function makeHtmlFileContent(dest){
+    // Use fast redirect (meta-refresh + JS fallback)
+    const safe = dest.replace(/"/g,'&quot;');
+    return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="refresh" content="0; url=${safe}">
+<title>Redirecting...</title>
+<script>window.location.replace(${JSON.stringify(dest)});</script>
+</head>
+<body>
+  <p>Redirecting... <a href="${safe}">Click here if not redirected</a></p>
+</body>
+</html>`;
   }
 
-  // parse hash on load for redirect
-  function parseHashAndMaybeRedirect() {
-    const h = location.hash.slice(1);
-    if (!h) return;
-    const params = new URLSearchParams(h);
-    const uenc = params.get('u');
-    if (!uenc) return;
-    try {
-      const url = b64DecodeUnicode(decodeURIComponent(uenc));
-      // optional: show a simple interstitial with 1s delay (user-friendly)
-      const page = document.body;
-      page.innerHTML = '<div style="font-family:system-ui,Arial;display:flex;align-items:center;justify-content:center;height:100vh;background:#fafafa"><div style="background:#fff;padding:20px;border-radius:12px;box-shadow:0 10px 30px rgba(2,6,23,0.06);max-width:520px;text-align:center"><h2 style="margin:0 0 8px">You are being redirected…</h2><p style="color:#6b7280;margin:0 0 12px">Opening the destination link now.</p><a id="go" href="' + url + '" style="display:inline-block;padding:10px 14px;border-radius:8px;background:#2563eb;color:#fff;text-decoration:none;font-weight:700">Open now</a><div style="margin-top:12px;color:#94a3b8">If nothing happens, click the button above.</div></div></div>';
-      // auto-redirect after short delay (1s)
-      setTimeout(()=>{ window.location.href = url; }, 900);
-    } catch (e) {
-      console.error('failed to decode URL', e);
-    }
-  }
+  // DOM
+  const origEl = document.getElementById('orig');
+  const codeEl = document.getElementById('code');
+  const labelEl = document.getElementById('label');
+  const genBtn = document.getElementById('gen');
+  const outDiv = document.getElementById('out');
+  const showCode = document.getElementById('showCode');
+  const redirectLinePre = document.getElementById('redirectLine');
+  const htmlFilePre = document.getElementById('htmlFile');
+  const copyRedirect = document.getElementById('copyRedirect');
+  const downloadRedirect = document.getElementById('downloadRedirect');
+  const downloadHtml = document.getElementById('downloadHtml');
 
-  // UI handlers
-  document.getElementById('gen').addEventListener('click', ()=>{
-    const orig = document.getElementById('orig').value.trim();
-    if (!orig) { alert('مهرباني وکړئ اصلي لینک دننه کړئ.'); return; }
-    // basic validation
-    try {
-      new URL(orig); // will throw if invalid (but accepts relative URLs too)
-    } catch (e) {
-      // allow as-is but warn
-      if (!confirm('محتاط اوسئ: ورکړل شوی متن ښایي قانوني URL نه وي. ادامه غواړئ؟')) return;
-    }
+  let current = { code:'', dest:'' };
 
-    const label = document.getElementById('label').value.trim();
-    const code = makeCode(6);
-    const share = buildShareLink(code, orig, label);
+  genBtn.addEventListener('click', ()=>{
+    const dest = origEl.value.trim();
+    if(!dest){ alert('مهرباني وکړئ اصلي لینک دننه کړئ.'); return; }
+    // basic URL check (allow mailto or relative too)
+    try { new URL(dest); } catch(e){ if(!confirm('ښايي ورکړل شوی متن حقیقي URL نه وي. ادامه غواړئ؟')) return; }
 
-    // display (we show "Tuinty/linkpass/CODE" visually)
-    document.getElementById('codeText').textContent = code;
-    const shareEl = document.getElementById('shareLink');
-    shareEl.href = share;
-    shareEl.textContent = share;
-    document.getElementById('previewTitle').textContent = label || 'Tuinty LinkPass';
-    document.getElementById('previewSub').textContent = (label? label + ' — ' : '') + orig;
-    const btn = document.getElementById('previewBtn');
-    btn.href = share;
-    btn.textContent = label? label : 'Open Link';
+    const code = (codeEl.value.trim() || randCode(6));
+    const label = labelEl.value.trim();
 
-    // show
-    document.getElementById('out').style.display = 'block';
-    // enable copy
-    document.getElementById('copy').disabled = false;
+    const redirectLine = makeRedirectLine(code, dest);
+    const htmlContent = makeHtmlFileContent(dest);
+
+    current = { code, dest, redirectLine, htmlContent, filename:`pass-${code}.html` };
+
+    showCode.textContent = code;
+    redirectLinePre.textContent = redirectLine;
+    htmlFilePre.textContent = htmlContent;
+    outDiv.style.display = 'block';
+    copyRedirect.disabled = false;
+    downloadRedirect.disabled = false;
+    downloadHtml.disabled = false;
   });
 
-  document.getElementById('copy').addEventListener('click', ()=>{
-    const a = document.getElementById('shareLink');
-    if (!a.href) return alert('اول لینک جوړ کړئ');
-    navigator.clipboard?.writeText(a.href).then(()=>{ alert('لینک کاپي شو'); }).catch(()=>{ prompt('دا لینک کاپي کړئ:', a.href); });
+  // copy redirect line
+  copyRedirect.addEventListener('click', ()=>{
+    if(!current.redirectLine) return alert('اول Generate وکړئ');
+    navigator.clipboard?.writeText(current.redirectLine).then(()=>alert('کاپي شو')).catch(()=>{ prompt('کاپي خط:', current.redirectLine) });
   });
 
-  document.getElementById('qrBtn').addEventListener('click', ()=>{
-    const a = document.getElementById('shareLink');
-    if (!a.href) return alert('اول لینک جوړ کړئ');
-    const qWrap = document.getElementById('qrWrap');
-    // Use chart.googleapis (no server needed). Note: sometimes blocked in some regions.
-    const qUrl = 'https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl=' + encodeURIComponent(a.href);
-    qWrap.style.display = 'block';
-    qWrap.innerHTML = '<div class="small muted">QR (scan to open):</div><img src="' + qUrl + '" alt="QR code" width="220" height="220" />';
+  // download redirects file (single-line txt)
+  downloadRedirect.addEventListener('click', ()=>{
+    if(!current.redirectLine) return alert('اول Generate وکړئ');
+    const blob = new Blob([current.redirectLine+"\n"], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = '_redirects.txt';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
   });
 
-  document.getElementById('clear').addEventListener('click', ()=>{
-    document.getElementById('orig').value = '';
-    document.getElementById('label').value = '';
-    document.getElementById('out').style.display = 'none';
-    document.getElementById('qrWrap').style.display = 'none';
+  // download html redirect file
+  downloadHtml.addEventListener('click', ()=>{
+    if(!current.htmlContent) return alert('اول Generate وکړئ');
+    const blob = new Blob([current.htmlContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${current.filename}`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
   });
-
-  // On load: if page opened with hash containing u=..., redirect
-  parseHashAndMaybeRedirect();
 </script>
 </body>
 </html> 
